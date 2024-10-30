@@ -29,7 +29,7 @@ static void smartDelay(unsigned long ms);
 
 //LoRa
 const char* host = "10.38.32.137"; //direccion ip publica del servidor (maquina virtual)
-const uint16_t port = 1026; //puerto por el cual me voy a conectar
+const uint16_t port = 8080; //puerto por el cual me voy a conectar
 
 //Temperatura y Humedad
 ClosedCube_HDC1080 sensor;
@@ -167,12 +167,11 @@ void bundling(float temp, float hum, float* gps){
 
     //send packet
     LoRa.beginPacket();
-    LoRa.print("hello ");
-    LoRa.print(counter);
+    LoRa.print(message);
     LoRa.endPacket();
 
     counter++;
-    delay(5000); 
+    delay(5000); //Cambiar para enviar cada 5 min
 }
 
 static void smartDelay(unsigned long ms)
