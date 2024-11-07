@@ -5,11 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: postgres_iot
+    environment:
+      POSTGRES_DB: iotplant
+      POSTGRES_USER: simon
+      POSTGRES_PASSWORD: simon123
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -1,0 +1,10 @@
+# Dockerfile para PostgreSQL
+FROM postgres:latest
+
+COPY init.sql /docker-entrypoint-initdb.d/
+
+ENV POSTGRES_DB=iotplant
+ENV POSTGRES_USER=simon
+ENV POSTGRES_PASSWORD=simon123
+
+EXPOSE 5432
