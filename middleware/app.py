@@ -14,12 +14,13 @@ def convert_epoch_ms_to_timestamp(epoch_ms):
 def connect_to_postgresql():
     try:
         connection = psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST", "postgres_db"),
+            host=os.getenv("POSTGRES_HOST", "db"),
             port=os.getenv("POSTGRES_PORT", "5432"),
             user=os.getenv("POSTGRES_USER", "simon"),
             password=os.getenv("POSTGRES_PASSWORD", "simon123"),
-            dbname=os.getenv("POSTGRES_DB", "medidas")
+            dbname=os.getenv("POSTGRES_DB", "iotplant")
         )
+        print("Conexión exitosa a PostgreSQL")
         return connection
     except Exception as e:
         print(f"Error al conectar a PostgreSQL: {e}")
@@ -28,6 +29,7 @@ def connect_to_postgresql():
 
 # Leer datos de CrateDB
 def read_from_crate():
+    print("Intentando conectar a CrateDB...")
     connection = client.connect('http://10.38.32.137:8083', username='crate')
     cursor = connection.cursor()
     try:
@@ -35,10 +37,10 @@ def read_from_crate():
         SELECT entity_id, temp, humedad, lat, lon, time_index
         FROM "doc"."etvariables"
         WHERE entity_id = 'Saimon'
-          AND time_index >= NOW() - INTERVAL '3 DAY'
         """
         cursor.execute(query)
         return cursor.fetchall()
+        print("Datos recuperados de CrateDB:", rows)
     finally:
         cursor.close()
         connection.close()
@@ -55,7 +57,7 @@ def insert_measurements(data):
         if len(data) > 0:
             cursor.execute("DELETE FROM temperature")
             cursor.execute("DELETE FROM humidity")
-            cursor.execute("DELETE FROM positions")
+            cursor.execute("DELETE FROM position")
         
         # Insertar nuevos datos
         for entity_id, temp, humidity, lat, lon, timestamp in data:
@@ -73,11 +75,12 @@ def insert_measurements(data):
                 VALUES (%s, %s, %s)
                 """, (entity_id, humidity, timestamp_dt))
             
-            if lat > 0 and lon > 0:
+            if lat != 0 and lon != 0 and lat > -90 and lat < 90 and lon > -180 and lon < 180:
                 cursor.execute("""
                 INSERT INTO position (entity_id, timestamp, lat, lon)
                 VALUES (%s, %s, %s, %s)
                 """, (entity_id, timestamp_dt, lat, lon))
+                print(f"Insertado en position: {entity_id}, {lat}, {lon}, {timestamp_dt}")
         
         connection.commit()
     finally:
@@ -161,6 +164,12 @@ def predictions():
 # Ejecución principal
 if __name__ == "__main__":
     raw_data = read_from_crate()
+    
     if raw_data:
+        print("Datos recibidos de CrateDB:", raw_data)
         insert_measurements(raw_data)
+        print("Datos insertados en PostgreSQL")
         predictions()
+        print("Predicciones generadas y almacenadas en PostgreSQL")
+    else:
+        print("No se recibieron datos de CrateDB o hubo un error en la consulta")

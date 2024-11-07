@@ -1,6 +1,6 @@
-psycopg2
-crate
 pandas
-dash
-plotly
-dash-daq
+psycopg2-binary
+crate
+scikit-learn
+skforecast
+numpy
