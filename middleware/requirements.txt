@@ -1,0 +1,6 @@
+psycopg2
+crate
+pandas
+dash
+plotly
+dash-daq
