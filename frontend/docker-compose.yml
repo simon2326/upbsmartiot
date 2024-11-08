@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfile  # Asegúrate de que el nombre del Dockerfile sea correcto
+    environment:
+      POSTGRES_HOST: db  # Usa el nombre del servicio de la base de datos en el middleware
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: simon
+      POSTGRES_PASSWORD: simon123
+      POSTGRES_DB: iotplant
+    ports:
+      - "8050:8050"
+    networks:
+      - iot_network
+
+networks:
+  iot_network:
+    external: true
