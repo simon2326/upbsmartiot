@@ -1,0 +1,42 @@
+.app-container {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f5f0;
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin: auto;
+    box-shadow: none;
+}
+
+.tabs-container {
+    background-color: #f5f5f0;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.tab-content {
+    background-color: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.plant-info-title, .text-center {
+    color: #6c9a8b;
+}
+
+.collapsible-summary {
+    font-weight: bold;
+    color: #556b2f;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.plant-info-image {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}

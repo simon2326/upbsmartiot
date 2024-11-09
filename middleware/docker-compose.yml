@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - middleware-network
 
   app:
     build:
@@ -26,3 +28,9 @@ services:
       POSTGRES_USER: simon
       POSTGRES_PASSWORD: simon123
       POSTGRES_DB: iotplant
+    networks:
+      - middleware-network
+
+networks:
+  middleware-network:
+    external: true
