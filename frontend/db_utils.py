@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def connect_to_postgresql():
     try:
         connection = psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST", "middleware-db-1"),
+            host="db",
             port=os.getenv("POSTGRES_PORT", "5432"),
             dbname=os.getenv("POSTGRES_DB", "iotplant"),
             user=os.getenv("POSTGRES_USER", "simon"),

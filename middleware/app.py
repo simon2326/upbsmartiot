@@ -14,7 +14,7 @@ def convert_epoch_ms_to_timestamp(epoch_ms):
 def connect_to_postgresql():
     try:
         connection = psycopg2.connect(
-            host=os.getenv("POSTGRES_HOST", "db"),
+            host="db",
             port=os.getenv("POSTGRES_PORT", "5432"),
             user=os.getenv("POSTGRES_USER", "simon"),
             password=os.getenv("POSTGRES_PASSWORD", "simon123"),
@@ -25,7 +25,6 @@ def connect_to_postgresql():
     except Exception as e:
         print(f"Error al conectar a PostgreSQL: {e}")
         return None
-
 
 # Leer datos de CrateDB
 def read_from_crate():
@@ -39,8 +38,11 @@ def read_from_crate():
         WHERE entity_id = 'Saimon'
         """
         cursor.execute(query)
-        return cursor.fetchall()
-        print("Datos recuperados de CrateDB:", rows)
+        rows = cursor.fetchall()
+        print(f"Datos recuperados de CrateDB: {rows}")
+        return rows
+    except Exception as e:
+        print(f"Error al leer datos de CrateDB: {e}")
     finally:
         cursor.close()
         connection.close()
@@ -63,13 +65,13 @@ def insert_measurements(data):
         for entity_id, temp, humidity, lat, lon, timestamp in data:
             timestamp_dt = convert_epoch_ms_to_timestamp(timestamp)
             
-            if 0 <= temp <= 100:
+            if 0 < temp <= 100:
                 cursor.execute("""
                 INSERT INTO temperature (entity_id, temperature, timestamp)
                 VALUES (%s, %s, %s)
                 """, (entity_id, temp, timestamp_dt))
                 
-            if 0 <= humidity <= 100:
+            if 0 < humidity <= 100:
                 cursor.execute("""
                 INSERT INTO humidity (entity_id, humidity, timestamp)
                 VALUES (%s, %s, %s)
@@ -83,6 +85,9 @@ def insert_measurements(data):
                 print(f"Insertado en position: {entity_id}, {lat}, {lon}, {timestamp_dt}")
         
         connection.commit()
+    except Exception as e:
+        print(f"Error al insertar datos en PostgreSQL: {e}")
+        connection.rollback
     finally:
         cursor.close()
         connection.close()
@@ -163,10 +168,11 @@ def predictions():
 
 # Ejecución principal
 if __name__ == "__main__":
+    print("Middleware iniciado")
     raw_data = read_from_crate()
     
     if raw_data:
-        print("Datos recibidos de CrateDB:", raw_data)
+        print(f"Datos recibidos de CrateDB: {raw_data}")
         insert_measurements(raw_data)
         print("Datos insertados en PostgreSQL")
         predictions()

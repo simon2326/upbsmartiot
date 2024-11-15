@@ -1,12 +1,13 @@
 services:
   frontend:
+    container_name: frontend
     build:
       context: .
       dockerfile: dockerfile
     ports:
       - "8050:8050"
     environment:
-      POSTGRES_HOST: middleware-db-1
+      POSTGRES_HOST: middleware-db
       POSTGRES_PORT: 5432
       POSTGRES_USER: simon
       POSTGRES_PASSWORD: simon123
@@ -14,8 +15,8 @@ services:
     volumes:
       - .:/app
     networks:
-      - middleware-network
+      - middleware_middleware-network
 
 networks:
-  middleware-network:
+  middleware_middleware-network:
     external: true

@@ -1,5 +1,5 @@
-# Utilizar una imagen base de Python 3.10
-FROM python:3.10
+# Utilizar una imagen base de Python 3.8
+FROM python:3.8
 
 # Instalar cron y vim (opcional)
 RUN apt-get update && apt-get -y install cron vim
@@ -11,15 +11,17 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el archivo de crontab al directorio de cron del contenedor
+# Copiar el script principal de la aplicación, el archivo crontab, y el script de inicio
+COPY app.py .
 COPY crontab /etc/cron.d/crontab
-
-# Copiar el script principal de la aplicación
-COPY app.py /app/app.py
+COPY start_app.sh .
 
 # Dar permisos correctos al archivo de crontab y cargarlo en cron
 RUN chmod 0644 /etc/cron.d/crontab
-RUN /usr/bin/crontab /etc/cron.d/crontab
+RUN crontab /etc/cron.d/crontab
 
-# Ejecutar cron como proceso principal del contenedor
-CMD ["cron", "-f"]
+# Dar permisos de ejecución al script de inicio
+RUN chmod +x /app/start_app.sh
+
+# Ejecutar el script de inicio como el comando principal
+CMD ["/app/start_app.sh"]
