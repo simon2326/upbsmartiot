@@ -9,3 +9,4 @@ def get_layout():
             dcc.Tab(label='Predicciones', children=predictions.layout, className="tab-content")
         ], className="tabs-container")
     ], className="app-container")
+
